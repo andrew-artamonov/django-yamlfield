@@ -17,7 +17,7 @@ class YAMLField(models.TextField):
         if value == "":
             return None
         try:
-            if isinstance(value, str):
+            if isinstance(value, (str,bytes)):
                 return yaml.load(value, OrderedLoader)
         except ValueError:
             raise ValidationError("Enter valid YAML")
@@ -30,7 +30,7 @@ class YAMLField(models.TextField):
         if not value or value == "":
             return ""
         if isinstance(value, (dict, list)):
-            value = yaml.dump(value, Dumper=OrderedDumper, default_flow_style=False)
+            value = yaml.dump(value, Dumper=OrderedDumper, default_flow_style=False, encoding='utf8', allow_unicode=True)
         return value
 
     def value_from_object(self, obj):
@@ -43,4 +43,4 @@ class YAMLField(models.TextField):
         value = getattr(obj, self.attname)
         if not value or value == "":
             return value
-        return yaml.dump(value, Dumper=OrderedDumper, default_flow_style=False)
+        return yaml.dump(value, Dumper=OrderedDumper, default_flow_style=False, encoding=None, allow_unicode=True)
